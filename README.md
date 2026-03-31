@@ -2,38 +2,6 @@
  
 This simple mobile form takes in three fields: name, email, and a short message. It submits to a mock API endpoint with proper loading, error, and success handling.
  
-## Get started
- 
-1. Scaffold a new React Native project
- 
-   ```bash
-   npx @react-native-community/cli init MobileForm --template react-native-template-typescript
-   cd MobileForm
-   ```
- 
-2. Copy in the source files
- 
-   ```bash
-   cp -r /path/to/this-repo/src ./src
-   cp /path/to/this-repo/App.tsx ./App.tsx
-   ```
- 
-3. Install dependencies
- 
-   ```bash
-   npm install
-   ```
- 
-4. Run the app
- 
-   ```bash
-   # iOS
-   npx react-native run-ios
- 
-   # Android
-   npx react-native run-android
-   ```
- 
 ## Project structure
  
 ```
@@ -107,11 +75,3 @@ function useForm<T>({
   onSubmit: (data: T) => Promise<void>;
 })
 ```
- 
-For larger apps with 5+ forms or complex cross-field validation, reach for [react-hook-form](https://react-hook-form.com) paired with [Zod](https://zod.dev) for schema-based validation.
- 
-## Learn more
- 
-- [React Native docs](https://reactnative.dev/docs/getting-started): Getting started and core concepts
-- [TypeScript handbook](https://www.typescriptlang.org/docs/handbook/intro.html): TypeScript fundamentals
-- [React Native community](https://github.com/facebook/react-native): View the open source platform and contribute
