@@ -1,50 +1,117 @@
-# Welcome to your Expo app 👋
-
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
+# Mobile Form
+ 
+This simple mobile form takes in three fields: name, email, and a short message. It submits to a mock API endpoint with proper loading, error, and success handling.
+ 
 ## Get started
-
-1. Install dependencies
-
+ 
+1. Scaffold a new React Native project
+ 
+   ```bash
+   npx @react-native-community/cli init MobileForm --template react-native-template-typescript
+   cd MobileForm
+   ```
+ 
+2. Copy in the source files
+ 
+   ```bash
+   cp -r /path/to/this-repo/src ./src
+   cp /path/to/this-repo/App.tsx ./App.tsx
+   ```
+ 
+3. Install dependencies
+ 
    ```bash
    npm install
    ```
-
-2. Start the app
-
+ 
+4. Run the app
+ 
    ```bash
-   npx expo start
+   # iOS
+   npx react-native run-ios
+ 
+   # Android
+   npx react-native run-android
    ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+ 
+## Project structure
+ 
 ```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
+MobileForm/
+├── App.tsx
+└── src/
+    ├── App.tsx
+    ├── components/
+    │   └── Input.tsx
+    ├── hooks/
+    │   ├── useForm.ts
+    │   └── validation.ts
+    ├── screens/
+    │   └── ContactFormScreen.tsx
+    └── services/
+        └── api.ts
+```
+ 
+- **App.tsx** — entry point, re-exports from **src/App.tsx**
+- **components/Input.tsx** — reusable input with label, focus, and error state
+- **hooks/useForm.ts** — all form state and submit logic
+- **hooks/validation.ts** — pure validation function, no side effects
+- **screens/ContactFormScreen.tsx** — UI only, calls **useForm()**
+- **services/api.ts** — mock API call, swap in a real **fetch()** when ready
+ 
+## Validation logic
+ 
+Validation runs synchronously in **validateContactForm()** before any network call. If any field fails, **setErrors()** is called and the submit returns early — no fetch is made.
+ 
+| Field | Rules |
+|---|---|
+| **name** | Required, min 2 characters |
+| **email** | Required, valid email format |
+| **message** | Required, min 10 characters |
+ 
+Each field's error clears as soon as the user starts typing in it again.
+ 
+## State flow
+ 
+All state lives in **useForm.ts**. The screen is stateless — it only renders.
+ 
+```
+User types
+  → handleChange(field)(value)
+  → updates formData[field]
+  → clears errors[field] if present
+ 
+User taps Submit
+  → validate(formData)
+     ├── invalid → setErrors(), return early
+     └── valid
+          → setIsLoading(true)
+          → await submitContactForm(formData)
+             ├── resolves → setStatus('success'), reset formData
+             └── rejects  → setStatus('error'), setErrorMessage(...)
+          → setIsLoading(false)   ← always runs via finally
+```
+ 
+## Scaling to multiple forms
+ 
+The simplest path is to make **useForm** generic so each form passes its own validate and onSubmit:
+ 
+```ts
+function useForm<T>({
+  initialValues,
+  validate,
+  onSubmit,
+}: {
+  initialValues: T;
+  validate: (data: T) => Partial<Record<keyof T, string>>;
+  onSubmit: (data: T) => Promise<void>;
+})
+```
+ 
+For larger apps with 5+ forms or complex cross-field validation, reach for [react-hook-form](https://react-hook-form.com) paired with [Zod](https://zod.dev) for schema-based validation.
+ 
 ## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+ 
+- [React Native docs](https://reactnative.dev/docs/getting-started): Getting started and core concepts
+- [TypeScript handbook](https://www.typescriptlang.org/docs/handbook/intro.html): TypeScript fundamentals
+- [React Native community](https://github.com/facebook/react-native): View the open source platform and contribute
