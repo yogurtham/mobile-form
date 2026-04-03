@@ -33,7 +33,7 @@ Validation runs synchronously in **validateContactForm()** before any network ca
  
 | Field | Rules |
 |---|---|
-| **name** | Required, min 2 characters |
+| **name** | Required, min 1 character |
 | **email** | Required, valid email format |
 | **message** | Required, min 10 characters |
  
